@@ -1,8 +1,0 @@
-{
-"SpaProxyServer": {
-"ServerUrl": "http://localhost:3000",
-"LaunchCommand": "npm start",
-"WorkingDirectory": "/Users/isaac.wadd/Downloads/Winter 2023/Enterprise_Dev/mission_14-iw233/back/../front/",
-"MaxTimeoutInSeconds": "120"
-}
-}
