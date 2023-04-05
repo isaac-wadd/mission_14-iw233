@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react'
-import MovieComponent from '../components/MovieComponent'
 import Pagination from '../components/Pagination'
+import { Movie } from '../Models/Movie'
 
 export default function MoviesPage () {
 
@@ -10,28 +10,22 @@ export default function MoviesPage () {
     const [currPageNum, setPageNum] = useState(1)
     const [moviesPerPage] = useState(10)
     const [loading, setLoading] = useState(true)
-    const [sortCol, setSortCol] = useState('movieId')
+    const [sortCol, setSortCol] = useState('title')
 
     const cols = [ 'title', 'year', 'director', 'category', 'rating', 'edited', 'lentTo', 'notes' ]
-    const friendlyNames = [ 'Title', 'Year', 'Director', 'Category', 'Rating', 'Edited', 'Lent To', 'Notes' ]
+    const friendlyColNames = [ 'Title', 'Year', 'Director', 'Category', 'Rating', 'Edited', 'Lent To', 'Notes' ]
 
     useEffect(() => {
         const fetchMovieData = async () => {
             const res = await fetch('https://localhost:4000/api/Movies')
             let tmpData = await res.json()
             tmpData = [...tmpData].sort((a, b) => a[sortCol] > b[sortCol] ? 1 : -1 )
+            tmpData = tmpData.filter((mov: Movie) => mov.edited.toLowerCase() === 'yes' )
             setMoviesList(tmpData)
             setLoading(false)
         }
         fetchMovieData()
     })
-
-    const firstMovieInd = (currPageNum - 1) * moviesPerPage
-    const lastMovieInd = firstMovieInd + moviesPerPage
-    const currMovies = moviesList.slice(firstMovieInd, lastMovieInd)
-
-    function paginate(pageNum: number) { setPageNum(pageNum) }
-    function sortData(col: string) { setSortCol(col) }
 
     if (loading) {
         return (
@@ -41,17 +35,33 @@ export default function MoviesPage () {
         )
     }
 
+    const firstMovieInd = (currPageNum - 1) * moviesPerPage
+    const lastMovieInd = firstMovieInd + moviesPerPage
+    const currMovies = moviesList.slice(firstMovieInd, lastMovieInd)
+
+    let movNums: number[] = []
+    for (let i = 0; i < moviesList.length; i++) { movNums.push(i) }
+    movNums = movNums.slice(firstMovieInd, lastMovieInd)
+
+    function paginate(pageNum: number) { setPageNum(pageNum) }
+
+    function sortData(col: string) {
+        setSortCol(col)
+        setPageNum(1)
+    }
+
     return (
         <>
-            <h3 className='display-5 text-center'>All Movies</h3>
+            <h3 className='display-5 text-center'>Edited Movies</h3>
             <br />
             <table className='table table-striped table-bordered text-start'>
                 <thead>
                     <tr>
                     {
                         cols.map((col: string, index: number) => {
+                            const thClass = (col === sortCol ? 'table-info' : '')
                             return (
-                                <th key={col} onClick={() => sortData(col)}>{friendlyNames[index]}</th>
+                                <th key={index} onClick={() => sortData(col)} className={thClass}>{friendlyColNames[index]}</th>
                             )
                         })
                     }
@@ -59,32 +69,31 @@ export default function MoviesPage () {
                 </thead>
                 <tbody>
                 {
-                    currMovies.map((movie: any) => {
-                        return <MovieComponent
-                            key={movie.movieId}
-                            movieId={movie.movieId}
-                            title={movie.title}
-                            year={movie.year}
-                            director={movie.director}
-                            category={movie.category}
-                            rating={movie.rating}
-                            edited={movie.edited}
-                            lentTo={movie.lentTo}
-                            notes={movie.notes}
-                        />
+                    currMovies.map((movie: Movie, index: number) => {
+                        return (
+                            <tr key={index}>
+                                <td>{movie.title}</td>
+                                <td>{Math.trunc(movie.year)}</td>
+                                <td>{movie.director}</td>
+                                <td>{movie.category}</td>
+                                <td>{movie.rating}</td>
+                                <td>{movie.edited}</td>
+                                <td>{movie.lentTo}</td>
+                                <td>{movie.notes}</td>
+                            </tr>
+                        )
                     })
                 }
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th>Title</th>
-                        <th>Year</th>
-                        <th>Director</th>
-                        <th>Category</th>
-                        <th>Rating</th>
-                        <th>Edited</th>
-                        <th>Lent To</th>
-                        <th>Notes</th>
+                    {
+                        cols.map((col: string, index: number) => {
+                            return (
+                                <th key={col}>{friendlyColNames[index]}</th>
+                            )
+                        })
+                    }
                     </tr>
                 </tfoot>
             </table>

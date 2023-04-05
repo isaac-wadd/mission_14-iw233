@@ -5,9 +5,7 @@ export default function Podcasts() {
     return (
         <>
             <br />
-            <h1 className='text-center'>
-                My Podcasts
-            </h1>
+            <h3 className='display-5'>My Podcasts</h3>
             <br />
             <br />
             <div className='container text-center mx-auto'>

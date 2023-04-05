@@ -10,20 +10,20 @@ export default function Pagination({ moviesPerPage, totalMovies, paginate, currP
 
     for (let i = 1; i <= Math.ceil(totalMovies / moviesPerPage); i++) { pageNumbers.push(i) }
 
-    const [prevPagesShown, setPrevPagesShown] = useState(3)
-    const [nextPagesShown, setNextPagesShown] = useState(3)
+    const [prevPagesShown, setPrevPagesShown] = useState(2)
+    const [nextPagesShown, setNextPagesShown] = useState(2)
 
     useEffect(() => {
         const getPrevAndNext = async () => {
-            if (currPage <= 3) {
+            if (currPage <= 2) {
                 setPrevPagesShown(currPage - 1)
             }
-            else if (currPage >= pageNumbers.at(-1) - 3) {
+            else if (currPage >= pageNumbers.at(-1) - 1) {
                 setNextPagesShown(pageNumbers.at(-1) - currPage)
             }
             else {
-                setNextPagesShown(3)
-                setPrevPagesShown(3)
+                setPrevPagesShown(2)
+                setNextPagesShown(2)
             }
         }
         getPrevAndNext()
@@ -34,10 +34,10 @@ export default function Pagination({ moviesPerPage, totalMovies, paginate, currP
 
     switch (currPage) {
         case (pageNumbers.at(-1)):
-            nextLiClass = nextLiClass + ' disabled'
+            nextLiClass += ' disabled'
             break
         case (pageNumbers.at(0)):
-            prevLiClass = prevLiClass + ' disabled'
+            prevLiClass += ' disabled'
             break
     }
 
@@ -54,9 +54,8 @@ export default function Pagination({ moviesPerPage, totalMovies, paginate, currP
                     </a>
                 </li>
                 {
-                    pagesShown.map((pageNum: Number) => {
-                        let liClass = 'page-item'
-                        if (currPage === pageNum) { liClass = liClass + ' active' }
+                    pagesShown.map((pageNum: number) => {
+                        const liClass = (currPage === pageNum ? 'page-item active' : 'page-item')
                         return (
                             <li key={String(pageNum)} className={liClass}>
                                 <a onClick={() => paginate(pageNum)} className='page-link' href='#'>{String(pageNum)}</a>

@@ -4,7 +4,7 @@ import NavBar from './components/NavBar'
 import Footer from './components/Footer'
 import HomePage from './pages/HomePage'
 import MoviesPage from './pages/MoviesPage'
-import Podcasts from './components/Podcasts'
+import Podcasts from './pages/PodcastsPage'
 
 export default function App() {
 
